@@ -1,0 +1,39 @@
+Find subdomain - cyber-ed.ru
+
+https://dnsdumpster.com/
+https://crt.sh/
+
+host cyber-ed.ru
+cyber-ed.ru has address 188.225.30.218
+cyber-ed.ru mail is handled by 0 cybered-ru01c.mail.protection.outlook.com.
+
+amass
+docker pull caffix/amass
+docker run -v OUTPUT_DIR_PATH:/.config/amass/ caffix/amass enum -d cyber-ed.ru
+
+
+docker run -v OUTPUT_DIR_PATH:/.config/amass/ caffix/amass enum -d step.cyber-ed.ru -dns-qps 200
+
+e154fe78101b
+
+amass enum -brute -active -d you-domain  -dns-qps 200
+
+nslookup step.cyber-ed.ru
+
+
+step.cyber-ed.ru
+
+
+
+
+
+
+docker run -v OUTPUT_DIR_PATH:/.config/amass/ caffix/amass enum -d step.cyber-ed.ru -rqps 10 -trqps 10
+
+
+
+
+
+
+
+-
