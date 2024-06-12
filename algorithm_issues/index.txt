@@ -1,0 +1,16 @@
+#include <algorithm>
+
+struct great_price
+{
+    inline bool operator() (const Product& a, const Product& b)
+    {
+        return (a.price_per_kilo > b.price_per_kilo);
+    }
+};
+
+std::sort(goods.begin(), goods.end(), great_price());
+
+std::sort(numbers.begin(), numbers.end(), std::greater<>());
+
+std::cout << std::fixed;
+std::cout << std::setprecision(4);
