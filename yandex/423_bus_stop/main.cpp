@@ -29,23 +29,21 @@ long long search (vector<long long> &stops, long long q) {
         }
 
         if (start > end) {
-            if (stops[result] != q) {
-                if (q < stops[middle]) {
-                    for (int i = middle; i > 0; --i) {
-                        if (q < stops[middle] && q > stops[middle - 1]) {
-                            result = middle - 1;
-                            break;
-                        }
-                    }
-                } else {
-                    for (int i = middle; i < stops.size(); ++i) {
-                        if (q > stops[middle] && q < stops[middle + 1]) {
-                            result = middle;
-                            break;
-                        }
-                    }
-                }
+            if (stops[middle] < q) {
+                while (stops[middle] < q && stops[middle + 1] < q)
+                    middle += 1;
+            } else {
+                while (stops[middle] > q)
+                    middle -= 1;
             }
+
+            long long dl = std::abs(q - stops[middle]);
+            long long dr = std::abs(stops[middle + 1] - q);
+
+            if (dr < dl)
+                result = middle + 1;
+            else
+                result = middle;
 
             break;
         };
@@ -54,6 +52,11 @@ long long search (vector<long long> &stops, long long q) {
     return result + 1;
 }
 
+/*
+
+-100 -20 -10
+
+*/
 
 int main()
 {
@@ -76,7 +79,7 @@ int main()
     }
 
 
-	return 0;
+    return 0;
 }
 
 /*
@@ -84,6 +87,10 @@ int main()
 3 2
 1 3 5
 4 1
+
+5 3
+1 3 7 20 21
+4 1 19
 
 Попробуй вот такой:
 
@@ -127,6 +134,13 @@ int main()
 5
 
 
+1
+3
+4
+4
+5
+5
+
 
 
 7 10
@@ -166,27 +180,6 @@ int main()
 
 
 ---
-
-Можешь сказать, какой у тебя вывод для такого кейса? (задача 423 про автобусы и остановки)
-7 4
-1 3 3 3 5 5 5
-3 4 5 6
-По логике моего решения для этих запросов надо вывести 2, 2, 5, 5 (на отдельной строке каждое число офк)
-
-
-
-у меня прошли все тесты, на этом варианте мой код выводит 2, 4, 5, 7
-
-
-
-
-
-
-
-
-
-
-
 
 
 
