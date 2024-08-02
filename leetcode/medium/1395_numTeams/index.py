@@ -36,10 +36,28 @@ class Solution:
     def numTeams(self, rating: List[int]) -> int:
         result = 0
 
-        sequences = [1] * len(rating)
+        raitingLength = len(rating)
+        for i in range(1, raitingLength):
+            less_left = 0
+            bigger_left = 0
+            less_right = 0
+            bigger_right = 0
 
-        for rate in rating:
-            pass
+            for l in range(0, i):
+                if rating[l] < rating[i]:
+                    less_left += 1
+                else:
+                    bigger_left += 1
+
+            for r in range(i + 1, raitingLength):
+                if rating[r] > rating[i]:
+                    bigger_right += 1
+                else:
+                    less_right += 1
+
+            result += (less_left * bigger_right)
+            result += (bigger_left * less_right)
+
 
         return result
 
@@ -115,66 +133,6 @@ Output: 4
 1 2 4
 2 3 4
 
-length - 4
-
-n! / (n - m)! * m!
-
-4! / (1)! * 3! = 4
-
-
-
-
-
-
-
-1 2 3 4 5
-3 * 2 *1 = 6
-
-5! - (5-3)!/ 3!
-
-1 2 3 4 5
--
-1 2 3
-4*5 = 20
-
-1 2 3 4 5
-1 2 3
-1 2 4
-1 2 5
-
-1 3 4
-1 3 5
-
-1 4 5
-
-2 3 4
-2 3 5
-
-2 4 5
-
-3 4 5
-
-5!/ (5-3)! * 3!
-5!
-/
-2!*3!
-
-1 2 3 4 5
-/
-1 2 * 1 2 3
-
-4 5
-/
-2
-
-2 * 5
-
-
-  1 2 3 4
-1 1 2 3 4
-2
-3
-4
 
 
 
