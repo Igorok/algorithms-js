@@ -26,22 +26,24 @@ class Solution:
         if len(nums) < 3:
             return False
 
-        s1 = 0
-        m1 = 0
-        b1 = 0
+        n1 = nums[0]
+        n2 = None
+        n3 = None
 
-        s2 = 0
-        m2 = 0
-        b2 = 0
+        for i in range(1, len(nums)):
+            if nums[i] < n1:
+                n1 = nums[i]
 
-        for i in range(len(nums)):
-            # find great
-            if nums[i] > nums[b1]:
-                s1 = m1
-                b1, m1 = i, b1
-
-                if nums[b1] > nums[m1] and nums[m1] > nums[s1]:
+            if nums[i] > n1:
+                if n2 is None:
+                    n2 = nums[i]
+                    continue
+                if nums[i] > n2:
+                    n3 = nums[i]
                     return True
+
+                n2 = nums[i]
+                continue
 
         return False
 
