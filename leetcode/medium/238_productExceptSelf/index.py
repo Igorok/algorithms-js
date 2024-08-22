@@ -26,28 +26,29 @@ class Solution:
 
 
     def productExceptSelf(self, nums: List[int]) -> List[int]:
-        multiply = 1
-        zero = 0
-        for val in nums:
-            if val == 0:
-                zero += 1
-                continue
-            if zero > 1:
-                multiply = 0
-                break
-            multiply *= val
+        prefix = [0] * len(nums)
+        postfix = [0] * len(nums)
+        result = [0] * len(nums)
 
-        if (zero > 1):
-            return [0] * len(nums)
+        prefix[0] = nums[0]
+        for i in range(1, len(nums)):
+            prefix[i] = prefix[i-1] * nums[i]
 
-        if zero == 1:
-            return [
-                multiply if v == 0 else 0
-                for v in nums
-            ]
+        postfix[-1] = nums[-1]
+        for i in range(len(nums) - 2, -1, -1):
+            postfix[i] = postfix[i+1] * nums[i]
 
-        return [ int(multiply / v) for v in nums ]
+        result[0] = postfix[1]
+        result[-1] = prefix[-2]
+        for i in range(1, len(nums) - 1):
+            result[i] = prefix[i - 1] * postfix[i + 1]
 
+        print(
+            'prefix', prefix,
+            'postfix', postfix,
+        )
+
+        return result
 '''
 
 [1,2,3,4]
