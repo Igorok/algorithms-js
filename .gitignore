@@ -30,6 +30,7 @@ lerna-debug.log*
 
 # IDE - VSCode
 .vscode/
+.zed/
 
 # python
 .venv
