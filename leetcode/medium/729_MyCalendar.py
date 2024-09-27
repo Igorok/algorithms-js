@@ -1,23 +1,60 @@
 from typing import List
 import json
 
-class MyCalendar:
+class MyCalendar_:
     def __init__(self):
         self.booking = []
 
     def book(self, start: int, end: int) -> bool:
         if len(self.booking) > 0:
             for s, e in self.booking:
-                if start >= s and start < e:
-                    return False
-                if end > s and end <= e:
-                    return False
-                if start < s and end > e:
+                if start >= e or end <= s:
+                    continue
+                else:
                     return False
 
         self.booking.append((start, end))
 
         return True
+
+
+class Node:
+    def __init__(self, start, end):
+        self.book = 1
+        self.start = start
+        self.end = end
+        self.left = None
+        self.right = None
+
+    def insert(self, start, end):
+        if not(end <= self.start or start >= self.end):
+            return False
+
+        if end <= self.start:
+            if self.left == None:
+                self.left = Node(start, end)
+                return True
+            else:
+                return self.left.insert(start, end)
+
+        if start >= self.end:
+            if self.right == None:
+                self.right = Node(start, end)
+                return True
+            else:
+                return self.right.insert(start, end)
+
+
+class MyCalendar:
+    def __init__(self):
+        self.root = None
+
+    def book(self, start: int, end: int) -> bool:
+        if self.root == None:
+            self.root = Node(start, end)
+            return True
+
+        return self.root.insert(start, end)
 
 
 def test ():
