@@ -1,7 +1,7 @@
 from typing import List
 
 class Solution:
-    def checkInclusion_(self, s1: str, s2: str) -> bool:
+    def checkInclusion__(self, s1: str, s2: str) -> bool:
         if len(s1) > len(s2):
             return False
 
@@ -23,7 +23,7 @@ class Solution:
 
         return False
 
-    def checkInclusion(self, s1: str, s2: str) -> bool:
+    def checkInclusion_(self, s1: str, s2: str) -> bool:
         if len(s1) > len(s2):
             return False
 
@@ -54,6 +54,53 @@ class Solution:
             start += 1
             end += 1
 
+        return False
+
+
+    def checkInclusion(self, s1: str, s2: str) -> bool:
+        if len(s1) > len(s2):
+            return False
+
+        def getId(char):
+            return ord(char) - ord('a')
+
+        a1, a2 = [0]*26, [0]*26
+        for i in range(len(s1)):
+            id1 = getId(s1[i])
+            a1[id1] += 1
+            id2 = getId(s2[i])
+            a2[id2] += 1
+
+        matches = 0
+        for i in range(26):
+            if a1[i] == a2[i]:
+                matches += 1
+
+        if matches == 26:
+            return True
+
+        start = 1
+        end = len(s1)
+        while end < len(s2):
+            prevId = getId(s2[start - 1])
+            a2[prevId] -= 1
+            if a1[prevId] == a2[prevId]:
+                matches += 1
+            elif a1[prevId] == (a2[prevId] + 1):
+                matches -= 1
+
+            nextId = getId(s2[end])
+            a2[nextId] += 1
+            if a1[nextId] == a2[nextId]:
+                matches += 1
+            elif a1[nextId] == (a2[nextId] - 1):
+                matches -= 1
+
+            if matches == 26:
+                return True
+
+            start += 1
+            end += 1
 
         return False
 
@@ -76,8 +123,10 @@ def test ():
             'input': ["abc", "ccccbbbbaaaa"],
             'output': False,
         },
-
-
+        {
+            'input': ["abc", "bbbca"],
+            'output': True,
+        },
     ]
     solution = Solution()
 
