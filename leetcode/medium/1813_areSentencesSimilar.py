@@ -1,7 +1,7 @@
 from typing import List
 
 class Solution:
-    def areSentencesSimilar(self, sentence1: str, sentence2: str) -> bool:
+    def areSentencesSimilar_(self, sentence1: str, sentence2: str) -> bool:
         if sentence1 == sentence2:
             return True
 
@@ -67,6 +67,40 @@ class Solution:
         )
 
         return True
+
+    def areSentencesSimilar(self, sentence1: str, sentence2: str) -> bool:
+        if sentence1 == sentence2:
+            return True
+
+        if len(sentence1) == len(sentence2):
+            return False
+
+        big, small = '', ''
+        if len(sentence1) > len(sentence2):
+            big = sentence1
+            small = sentence2
+        else:
+            big = sentence2
+            small = sentence1
+
+        bigA = big.split(' ')
+        smallA = small.split(' ')
+
+        if len(bigA) <= len(smallA):
+            return False
+
+        start = 0
+        end = len(smallA) - 1
+        endBig = len(bigA) - 1
+
+        while start <= end and bigA[start] == smallA[start]:
+            start += 1
+
+        while start <= end and bigA[endBig] == smallA[end]:
+            end -= 1
+            endBig -= 1
+
+        return start > end
 
 
 def test ():
