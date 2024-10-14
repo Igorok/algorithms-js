@@ -1,15 +1,38 @@
 from typing import List
+from json import dumps
 
 
 class Solution:
     def subsetXORSum(self, nums: List[int]) -> int:
-        r = 0
-        subsets = []
-        for i in range(1, len(nums)):
+        self.subsets = []
 
+        def rec(i, arr):
+            if i == len(nums):
+                if len(arr):
+                    self.subsets.append(arr)
+                return
+            a1 = arr.copy()
+            a1.append(nums[i])
+            a2 = arr.copy()
+            rec(i+1, a1)
+            rec(i+1, a2)
 
+        rec(0, [])
 
-        return r
+        print('self.subsets', self.subsets)
+
+        def getXOR(arr):
+            xor = 0
+            for v in arr:
+                xor = xor ^ v
+            return xor
+
+        s = 0
+        for arr in self.subsets:
+            xor = getXOR(arr)
+            s += xor
+
+        return s
 
 
 def test ():
@@ -27,8 +50,8 @@ def test ():
             'output': 480,
         },
     ]
-    solution = Solution()
 
+    solution = Solution()
     for param in params:
         result = solution.subsetXORSum(param['input'])
         print(
