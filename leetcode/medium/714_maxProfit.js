@@ -36,8 +36,6 @@ b   1   1   1   1  -1  1
 sell[i] = max(sell[i-1], price[i] - buy[i - 1])
 buy[i] = min(buy[i - 1], price[i]- sell[i])
 
-
-
 */
 
 const test = () => {
