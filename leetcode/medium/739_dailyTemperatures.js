@@ -17,24 +17,33 @@ var dailyTemperatures_1 = function(temperatures) {
     return res;
 };
 
+/*
+
+73() - 0
+
+76 - 0
+76, 72 - 1
+76, 72, 69 - 1
+76, 72, 71
+
+
+*/
 var dailyTemperatures = function(temperatures) {
     const res = new Array(temperatures.length).fill(0);
-
     const stack = [];
-
-    for (let i = temperatures.length - 1; i > -1; --i) {
-        const t = temperatures[i];
-
-        while (stack.length && stack[stack.length - 1][0] <= t) {
-            stack.pop();
+    for (let i = temperatures.length; i > -1; --i) {
+        while (stack.length) {
+            if (stack[stack.length - 1][0] > temperatures[i]) {
+                break;
+            } else {
+                stack.pop();
+            }
         }
 
         if (stack.length) {
-            const [pT, pI] = stack[stack.length - 1];
-            res[i] = pI - i;
+            res[i] = stack[stack.length - 1][1] - i;
         }
-
-        stack.push([t, i]);
+        stack.push([temperatures[i], i]);
     }
 
     return res;
