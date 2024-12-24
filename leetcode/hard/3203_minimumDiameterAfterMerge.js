@@ -14,18 +14,16 @@ var minimumDiameterAfterMerge = function(edges1, edges2) {
     };
 
     const getDiameter = (adj) => {
-        const distances = new Array(adj.length).fill(-1);
+        const visited = new Array(adj.length).fill(0);
         let res = 0;
 
         const dfs = (node) => {
-            distances[node] = 0;
             let edges = [];
 
             for (const nei of adj[node]) {
-                if (distances[nei] === -1) {
-                    distances[nei] = 0;
-                    distances[nei] = dfs(nei);
-                    edges.push(distances[nei]);
+                if (!visited[nei]) {
+                    visited[nei] = 1;
+                    edges.push(dfs(nei));
                 }
             }
 
@@ -37,13 +35,12 @@ var minimumDiameterAfterMerge = function(edges1, edges2) {
 
             res = Math.max(res, diameter);
             const dist = Math.max(dist1, dist2) + 1;
-            distances[node] = dist;
 
             return dist;
         };
 
 
-        distances[0] = 0;
+        visited[0] = 1;
         dfs(0);
 
         return res;
