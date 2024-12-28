@@ -99,7 +99,7 @@ var maxSumOfThreeSubarrays_1 = function(nums, k) {
 };
 
 
-var maxSumOfThreeSubarrays = function(nums, k) {
+var maxSumOfThreeSubarrays_2 = function(nums, k) {
     const cache = new Array(nums.length).fill(0);
     for (let i = 0; i < k; ++i) {
         cache[0] += nums[i];
@@ -149,6 +149,51 @@ var maxSumOfThreeSubarrays = function(nums, k) {
     return res;
 };
 
+var maxSumOfThreeSubarrays = function(nums, k) {
+    const cache = new Array(nums.length).fill(0);
+    for (let i = 0; i < k; ++i) {
+        cache[0] += nums[i];
+    }
+
+    for (let i = 1; i < nums.length-(k-1); ++i) {
+        cache[i] = cache[i-1];
+        cache[i] -= nums[i-1];
+        cache[i] += nums[i+k-1];
+    }
+
+    const postfix = new Array(nums.length).fill(0);
+    postfix[nums.length-1] = [cache[nums.length-1], nums.length-1];
+    for (let i = postfix.length - 2; i > -1; --i) {
+        postfix[i] = (cache[i] >= postfix[i+1][0])
+            ? [cache[i], i]
+            : [...postfix[i+1]];
+    }
+
+    let res = [];
+    let allMax = -1;
+    let left = [cache[0], 0]
+
+    for (let start = 0; start <= nums.length-3*k; ++start) {
+        if (cache[start] > cache[0]) {
+            left = [cache[start], start];
+        }
+        for (let i = start+k; i < nums.length - k - (k-1); ++i) {
+            const middle = cache[i];
+            const right = postfix[i+k];
+
+            const sum = left[0] + middle + right[0];
+            if (sum > allMax) {
+                allMax = sum;
+                res = [left[1], i, right[1]];
+            }
+
+            if (middle === postfix[i]) break;
+        }
+    }
+
+    return res;
+};
+
 const test = () => {
     const params = [
         {
@@ -158,6 +203,10 @@ const test = () => {
         {
             input: [[1,2,1,2,1,2,1,2,1], 2],
             output: [0,2,4],
+        },
+        {
+            input: [[7,13,20,19,19,2,10,1,1,19], 3],
+            output: [1,4,7],
         },
     ];
 
