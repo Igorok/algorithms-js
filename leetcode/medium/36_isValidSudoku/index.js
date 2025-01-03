@@ -1,28 +1,58 @@
-function isValidSudoku(board) {
-    var rows = new Array(9).fill(null).map(function () { return new Set(); });
-    var columns = new Array(9).fill(null).map(function () { return new Set(); });
-    var squares = [
-        new Array(3).fill(null).map(function () { return new Set(); }),
-        new Array(3).fill(null).map(function () { return new Set(); }),
-        new Array(3).fill(null).map(function () { return new Set(); }),
-    ];
-    for (var i = 0; i < 9; ++i) {
-        for (var j = 0; j < 9; ++j) {
-            if (board[i][j] === '.')
+/**
+ * @param {character[][]} board
+ * @return {boolean}
+ */
+var isValidSudoku = function(board) {
+    const checkSquare = (y, x) => {
+        let square = new Set();
+        for (let i = y; i < y + 3; ++i) {
+            for (let j = x; j < x + 3; ++j) {
+                if (board[i][j] === '.') {
+                    continue;
+                }
+                const num = Number(board[i][j]);
+                if (square.has(num)) {
+                    return false;
+                }
+                square.add(num);
+            }
+        }
+        return true;
+    };
+
+    const row = new Array(9).fill(0).map(() => new Set());
+    const column = new Array(9).fill(0).map(() => new Set());
+
+    for (let i = 0; i < board.length; ++i) {
+        for (let j = 0; j < board[0].length; ++j) {
+
+            if ((i % 3) === 0 && (j % 3) === 0) {
+                if (!checkSquare(i,j)) {
+                    return false;
+                }
+            }
+
+            if (board[i][j] === '.') {
                 continue;
-            var square = squares[Math.floor(i / 3)][Math.floor(j / 3)];
-            if (rows[i].has(board[i][j])
-                || columns[j].has(board[i][j])
-                || square.has(board[i][j])) {
+            }
+
+            const num = Number(board[i][j]);
+
+            if (row[i].has(num)) {
                 return false;
             }
-            rows[i].add(board[i][j]);
-            columns[j].add(board[i][j]);
-            square.add(board[i][j]);
+            if (column[j].has(num)) {
+                return false;
+            }
+
+            row[i].add(num);
+            column[j].add(num);
         }
     }
+
     return true;
-}
+};
+
 var test = function () {
     var params = [
         {
@@ -38,7 +68,8 @@ var test = function () {
             output: true,
         },
         {
-            input: [["8", "3", ".", ".", "7", ".", ".", ".", "."],
+            input: [
+                ["8", "3", ".", ".", "7", ".", ".", ".", "."],
                 ["6", ".", ".", "1", "9", "5", ".", ".", "."],
                 [".", "9", "8", ".", ".", ".", ".", "6", "."],
                 ["8", ".", ".", ".", "6", ".", ".", ".", "3"],
@@ -46,9 +77,30 @@ var test = function () {
                 ["7", ".", ".", ".", "2", ".", ".", ".", "6"],
                 [".", "6", ".", ".", ".", ".", "2", "8", "."],
                 [".", ".", ".", "4", "1", "9", ".", ".", "5"],
-                [".", ".", ".", ".", "8", ".", ".", "7", "9"]],
+                [".", ".", ".", ".", "8", ".", ".", "7", "9"]
+            ],
             output: false,
-        }
+        },
+        {
+            input: [[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."],[".",".",".",".",".",".",".",".","."]],
+            output: true,
+        },
+        {
+            input: [
+                ["3","1","9","7","4","8","6","5","2"],
+                ["7","4","3","6","5","2","1","8","9"],
+                ["6","2","5","1","3","9","8","7","4"],
+                ["5","3","7","9","8","6","2","4","1"],
+                ["2","6","4","3","1","7","5","9","8"],
+                ["1","9","8","5","2","4","3","6","7"],
+                ["9","7","1","8","6","3","4","2","5"],
+                ["8","5","2","4","9","1","7","3","6"],
+                ["4","8","6","2","7","5","9","1","3"]
+                ],
+            output: false,
+        },
+
+
     ];
     params.forEach(function (_a) {
         var input = _a.input, output = _a.output;
