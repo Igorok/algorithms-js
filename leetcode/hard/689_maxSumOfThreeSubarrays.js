@@ -43,113 +43,6 @@ var maxSumOfThreeSubarrays_0 = function(nums, k) {
 };
 
 var maxSumOfThreeSubarrays_1 = function(nums, k) {
-    let res = [];
-
-    const cache = new Array(nums.length).fill(0);
-
-    for (let i = 0; i < k; ++i) {
-        cache[0] += nums[i];
-    }
-
-    for (let i = 1; i < (nums.length-(k-1)); ++i) {
-        cache[i] = cache[i-1];
-        cache[i] -= nums[i-1];
-        cache[i] += nums[i+k-1];
-    }
-
-    let start = 0;
-    let end = nums.length - k;
-    let startMax = [-1, -1];
-    let endMax = [-1, -1];
-    let allMax = -1;
-
-    while (start + 2*k <= end) {
-        if (cache[start] > startMax[0]) {
-            startMax = [cache[start], start];
-        }
-        const tmp = endMax[0];
-        if (cache[end] >= endMax[0]) {
-            endMax = [cache[end], end];
-        }
-
-        let middleMax = [-1, -1];
-        for (let i = start + k; i <= end - k; ++i) {
-            if (cache[i] > middleMax[0]) {
-                middleMax = [cache[i], i];
-            }
-        }
-
-        const sum = startMax[0] + endMax[0] + middleMax[0];
-        if (sum === allMax  && tmp === endMax[0] && res[2] !== endMax[1]) {
-            res[2] = endMax[1];
-        }
-        if (sum > allMax) {
-            allMax = sum;
-            res = [
-                startMax[1], middleMax[1], endMax[1],
-            ];
-        }
-
-        start += 1;
-        end -= 1;
-    }
-
-
-    return res;
-};
-
-
-var maxSumOfThreeSubarrays_2 = function(nums, k) {
-    const cache = new Array(nums.length).fill(0);
-    for (let i = 0; i < k; ++i) {
-        cache[0] += nums[i];
-    }
-
-    for (let i = 1; i < nums.length-(k-1); ++i) {
-        cache[i] = cache[i-1];
-        cache[i] -= nums[i-1];
-        cache[i] += nums[i+k-1];
-    }
-
-    const prefix = [[cache[0], 0]];
-    for (let i = 1; i < nums.length-(k-1); ++i) {
-        prefix[i] = cache[i] > prefix[i-1][0]
-            ? [cache[i], i]
-            : [...prefix[i-1]];
-    }
-
-    const postfix = new Array(nums.length).fill(0);
-    postfix[nums.length-1] = [cache[nums.length-1], nums.length-1];
-    for (let i = postfix.length - 2; i > -1; --i) {
-        postfix[i] = (cache[i] >= postfix[i+1][0])
-            ? [cache[i], i]
-            : [...postfix[i+1]];
-    }
-
-    let start = 0;
-    let res = [];
-    let allMax = -1;
-
-    while (start + 3*k <= nums.length) {
-        const left = prefix[start];
-        for (let i = start+k; i < nums.length - k - (k-1); ++i) {
-            const middle = cache[i];
-            const right = postfix[i+k];
-
-            const sum = left[0] + middle + right[0];
-            if (sum > allMax) {
-                allMax = sum;
-                res = [left[1], i, right[1]];
-            }
-        }
-        start += 1;
-    }
-
-
-    return res;
-};
-
-var maxSumOfThreeSubarrays = function(nums, k) {
     const cache = new Array(nums.length).fill(0);
     for (let i = 0; i < k; ++i) {
         cache[0] += nums[i];
@@ -191,6 +84,55 @@ var maxSumOfThreeSubarrays = function(nums, k) {
         }
     }
 
+    return res;
+};
+
+var maxSumOfThreeSubarrays = function(nums, k) {
+    const sums = new Array(nums.length).fill(0);
+    for (let i = 0; i < k; ++i) {
+        sums[0] += nums[i];
+    }
+    for (let i = 1; i < nums.length-(k-1); ++i) {
+        sums[i] = sums[i-1];
+        sums[i] -= nums[i-1];
+        sums[i] += nums[i+k-1];
+    }
+
+    const cache = new Map();
+
+    const getMaxSums = (id, count) => {
+        const key = [id, count].join('_');
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+
+        if (id >= nums.length - (k-1) || count > 2) {
+            return 0;
+        }
+
+        const include = sums[id] + getMaxSums(id + k, count+1);
+        const exclude = getMaxSums(id+1, count);
+
+        const max = Math.max(include, exclude);
+        cache.set(key, max);
+
+        return max;
+    }
+    getMaxSums(0, 0);
+
+    const res = [];
+    let i = 0;
+    while (i <= nums.length - (k-1) && res.length < 3) {
+        const include = sums[i] + getMaxSums(i + k, res.length+1);
+        const exclude = getMaxSums(i+1, res.length);
+
+        if (include >= exclude) {
+            res.push(i);
+            i += k;
+        } else {
+            i += 1;
+        }
+    }
     return res;
 };
 

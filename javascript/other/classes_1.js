@@ -80,6 +80,7 @@ class Parent {
         this.#name = name;
     }
     hello() {
+        // console.log(`Hello my name is ${this.#name}`, (#name in this));
         console.log(`Hello my name is ${this.#name}`);
     }
 }
@@ -89,6 +90,7 @@ p.hello();
 
 class Child extends Parent {
     buy () {
+        // console.log('Goodbuy', this.#name, (#name in this));
         console.log('Goodbuy');
     }
 }
