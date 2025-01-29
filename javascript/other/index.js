@@ -35,3 +35,31 @@ function getX() {}
 
   console.log({ x1, y1 });
 })();
+
+/*
+
+console.log(undefined)
+test = 1
+test = 2
+test = 5
+console.log(test)
+++test
+
+*/
+run();
+
+async function run() {
+  console.log(test);
+  test = 1;
+
+  while (++test < 10) {
+    await new Promise((resolve) =>
+      setTimeout(() => {
+        console.log(test);
+        resolve();
+      }, 100)
+    );
+  }
+}
+
+var test = 5;
