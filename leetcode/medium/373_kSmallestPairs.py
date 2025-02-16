@@ -28,14 +28,44 @@ class Solution:
         return res
 
     def kSmallestPairs(self, nums1: List[int], nums2: List[int], k: int) -> List[List[int]]:
+        n = len(nums1)
+        m = len(nums2)
+        res = []
+        pairsQueue = [(nums1[0]+nums2[0], (0, 0))]
+        visited = set()
+
+        while pairsQueue and k > 0:
+            s, (i, j) = heapq.heappop(pairsQueue)
+            res.append((nums1[i], nums2[j]))
+
+            if i + 1 < n and not (i+1, j) in visited:
+                heapq.heappush(pairsQueue, (nums1[i+1] + nums2[j], (i+1, j)))
+                visited.add((i+1, j))
+            if j + 1 < m and not(i, j+1) in visited:
+                heapq.heappush(pairsQueue, (nums1[i] + nums2[j+1], (i, j+1)))
+                visited.add((i, j+1))
+            # if i + 1 < n and j + 1 < m and not (i+1, j+1) in visited:
+            #     heapq.heappush(pairsQueue, (nums1[i+1] + nums2[j+1], (i+1, j+1)))
+            #     visited.add((i+1, j+1))
 
 
-        return []
+            k -= 1
+
+
+        return res
 
 '''
 
-[1,2,4,5,6]
-[3,5,7,9]
+output
+
+[[1, 3], [2, 3], [1, 5], [2, 5], [4, 3], [1, 7], [5, 3], [2, 7], [4, 5], [6, 3], [1, 9], [5, 5], [2, 9], [4, 7], [6, 5], [5, 7], [4, 9], [6, 7], [5, 9], [6, 9]]
+[[1, 3], [2, 3], [1, 5], [2, 5], [2, 5], [2, 5], [4, 3], [1, 7], [5, 3], [2, 7], [2, 7], [2, 7], [2, 7], [2, 7], [4, 5], [4, 5], [4, 5], [4, 5], [4, 5], [6, 3]]
+
+
+[1, 2, 4, 5, 6]
+[3, 5, 7, 9],
+
+
 
 '''
 
@@ -53,6 +83,10 @@ def test ():
         {
             'input': [[1,2,4,5,6], [3,5,7,9], 3],
             'output': [[1,3],[2,3],[1,5]],
+        },
+        {
+            'input': [[1,2,4,5,6], [3,5,7,9], 20],
+            'output': [[1,3],[2,3],[1,5],[2,5],[4,3],[1,7],[5,3],[2,7],[4,5],[6,3],[1,9],[5,5],[2,9],[4,7],[6,5],[5,7],[4,9],[6,7],[5,9],[6,9]],
         },
     ]
     solution = Solution()
