@@ -91,30 +91,45 @@ class Solution:
 
         return res
 
+    def rangeBitwiseAnd(self, left: int, right: int) -> int:
+        i = 0
+        for j in range(32):
+            if left == right:
+                left = left << i
+                return left
+            left = left >> 1
+            right = right >> 1
+            i += 1
+
+        return 0
+
 
 
 
 '''
 
-1 0 1
-1 1 1
 
-1 0 1
-0 1 1
-1 1 1
-
-0 0 1 = 4
-
----
-
-30
-1 1 1 1 0
-10
-0 1 0 1 0
-
-0 1 0 1 1
-0 1 1 0 0
-0 1 1 0 1
+01010
+01011
+01100
+01101
+01110
+01111
+10000
+10001
+10010
+10011
+10100
+10101
+10110
+10111
+11000
+11001
+11010
+11011
+11100
+11101
+11110
 
 
 
