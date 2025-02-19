@@ -11,8 +11,10 @@ console.log("x", x);
 console.log("y", y);
 var y = 2;
 
-console.log("getX", getX);
-function getX() {}
+console.log("getX", getX, getX());
+function getX() {
+  return "I'm getX";
+}
 
 // ReferenceError: Cannot access 'getY' before initialization
 // console.log("getY", getY);
