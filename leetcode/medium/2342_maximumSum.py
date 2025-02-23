@@ -77,7 +77,7 @@ def test ():
         result = solution.maximumSum(param['input'])
         correct = json.dumps(result) == json.dumps(param['output'])
 
-        msg = 'SUCCESS' if json.dumps(result) == json.dumps(param['output']) else 'ERROR'
+        msg = 'SUCCESS' if correct else 'ERROR'
         msg += '\n'
         if not correct:
             msg += 'input ' + json.dumps(param['input']) + '\n'
