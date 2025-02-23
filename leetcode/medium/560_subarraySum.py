@@ -5,16 +5,6 @@ from collections import deque, defaultdict
 class Solution:
     def subarraySum_0(self, nums: List[int], k: int) -> int:
         res = 0
-        sums = [nums[0]]
-        for i in range(1, len(nums)):
-            sums.append(sums[i-1] + nums[i])
-
-
-        return res
-
-
-    def subarraySum(self, nums: List[int], k: int) -> int:
-        res = 0
         n = len(nums)
 
         for i in range(n):
@@ -28,19 +18,32 @@ class Solution:
 
         return res
 
-'''
--2 2 2 -2
--2,-2
--4, 2
--8, 4
--2, 16
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        prefix = defaultdict(int)
+        prefix[0] = 1
+        s = 0
+        res = 0
+        for num in nums:
+            s += num
+            diff = s - k
+            res += prefix[diff]
+            prefix[s] += 1
 
+        return res
+
+'''
+1 1 1 3
+1 2 3 6
 
 '''
 
 
 def test ():
     params = [
+        {
+            'input': [[1,1,1,3], 3],
+            'output': 2,
+        },
         {
             'input': [[0,0,0,3,0], 3],
             'output': 8,
@@ -56,6 +59,10 @@ def test ():
         {
             'input': [[1,2,3,-1,4], 3],
             'output': 3,
+        },
+        {
+            'input': [[1], 0],
+            'output': 0,
         },
 
     ]
