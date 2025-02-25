@@ -4,7 +4,23 @@ from collections import deque
 
 class Solution:
     def findDuplicate(self, nums: List[int]) -> int:
-        return 0
+        fast = slow = 0
+
+        while True:
+            fast = nums[fast]
+            fast = nums[fast]
+            slow = nums[slow]
+            if fast == slow:
+                break
+
+        slow2 = 0
+        while True:
+            slow2 = nums[slow2]
+            slow = nums[slow]
+            if slow2 == slow:
+                break
+
+        return slow
 
 def test ():
     params = [
