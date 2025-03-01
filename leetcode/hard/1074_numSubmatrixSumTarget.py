@@ -43,31 +43,27 @@ class Solution:
         m = len(matrix[0])
 
         sumMatrix = [matrix[i].copy() for i in range(n)]
+
         for i in range(n):
             for j in range(m):
-                if i == 0 and j != 0:
-                    sumMatrix[i][j] += sumMatrix[i][j-1]
-                elif j == 0 and i != 0:
-                    sumMatrix[i][j] += sumMatrix[i-1][j]
-                elif i != 0 and j != 0:
-                    sumMatrix[i][j] += sumMatrix[i][j-1]
-                    sumMatrix[i][j] += sumMatrix[i-1][j]
-                    sumMatrix[i][j] -= sumMatrix[i-1][j-1]
+                top = 0 if i == 0 else sumMatrix[i-1][j]
+                left = 0 if j == 0 else sumMatrix[i][j-1]
+                double = 0 if i == 0 or j == 0 else sumMatrix[i-1][j-1]
+                sumMatrix[i][j] += top + left - double
 
         res = 0
-
         for r1 in range(n):
             for r2 in range(r1, n):
                 count = defaultdict(int)
                 count[0] = 1
 
                 for c in range(m):
-                    bottom = sumMatrix[r1-1][c] if r1 > 0 else 0
-                    square = sumMatrix[r2][c] - bottom
+                    bottom = 0 if r1 == 0 else sumMatrix[r1-1][c]
+                    curr = sumMatrix[r2][c] - bottom
 
-                    diff = square - target
-                    res += count[diff]
-                    count[square] += 1
+                    res += count[curr - target]
+
+                    count[curr] += 1
 
         return res
 
