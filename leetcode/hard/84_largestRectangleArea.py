@@ -33,7 +33,7 @@ class Solution:
         return res
 
 
-    def largestRectangleArea(self, heights: List[int]) -> int:
+    def largestRectangleArea_1(self, heights: List[int]) -> int:
         res = 0
         stack = []
 
@@ -58,6 +58,16 @@ class Solution:
 
 
         return res
+
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        res = 0
+
+
+
+        return res
+
+
+
 
 '''
 
