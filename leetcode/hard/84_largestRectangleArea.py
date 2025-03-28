@@ -60,9 +60,21 @@ class Solution:
         return res
 
     def largestRectangleArea(self, heights: List[int]) -> int:
-        res = 0
+        n = len(heights)
+        res = heights[0]
 
+        for i in range(1, n):
+            if heights[i] < heights[i-1]:
+                l = i - 1
+                while heights[l] > heights[i] and l > -1:
+                    r = heights[l] * (i-l)
+                    res = max(res, r)
+                    heights[l] = heights[i]
+                    l -= 1
 
+        for i in range(n):
+            r = heights[i] * (n - i)
+            res = max(res, r)
 
         return res
 
@@ -71,9 +83,9 @@ class Solution:
 
 '''
 
-2 1 3 4 1 1 1 1 1 1
-1 2 1 1
-2 2 3 4
+2,1,5,6,2,3
+
+
 
 
 '''
