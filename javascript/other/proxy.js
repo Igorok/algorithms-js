@@ -1,25 +1,29 @@
-const handler = {
-    get(target, name) {
-        return name in target ? target[name] : 42;
+const obj = { a: 1, b: 2 };
+const proxyParam = {
+    get(target, prop, receiver) {
+        console.log('Get', prop);
+
+        if (!Reflect.has(target, prop)) {
+            return 0;
+        }
+
+        return Reflect.get(target, prop) * 2;
     },
+    set(target, prop, value) {
+        console.log('Set', prop, value);
+        Reflect.set(target, prop, value);
+    }
 };
-
-const p = new Proxy({}, handler);
-p.a = 1;
+const proxied = new Proxy({...obj}, proxyParam);
+proxied.c = 3;
 console.log(
-    'p.a', p.a,
-    'p.b', p.b
-); // 1, 42
-
-
-const revocable = Proxy.revocable(
-    { a: 1, b: 2 },
-    {
-        get(target, name) {
-            return target[name] ? target[name] * 2 : 0;
-        },
-    },
+    'proxied.a', proxied.a,
+    'proxied.b', proxied.b,
+    'proxied.c', proxied.c,
+    'proxied.d', proxied.d,
 );
+
+const revocable = Proxy.revocable({...obj}, proxyParam);
 const proxy = revocable.proxy;
 console.log(
     'proxy.a', proxy.a,
