@@ -4,32 +4,36 @@ from collections import deque, defaultdict
 
 class Solution:
     def partitionLabels(self, s: str) -> List[int]:
-        chars = defaultdict(int)
-        for i in range(len(s)):
-            char = s[i]
-            chars[char] = i
+        count = defaultdict(int)
+        for char in s:
+            count[char] += 1
 
         res = []
-        subChars = set()
-        lastChars = 0
-        length = 0
+        start = 0
+        visited = defaultdict(int)
+        completed = 0
         for i in range(len(s)):
-            length += 1
             char = s[i]
-            subChars.add(char)
-            if chars[char] == i:
-                lastChars += 1
-                if lastChars == len(subChars):
-                    res.append(length)
-                    subChars = set()
-                    lastChars = 0
-                    length = 0
+            visited[char] += 1
+            if visited[char] == count[char]:
+                completed += 1
 
-        if length:
-            res.append(length)
+            if completed != 0 and len(visited) == completed:
+                res.append(i - start + 1)
+                start = i + 1
+                completed = 0
+                visited = defaultdict(int)
+
 
         return res
 
+'''
+ababcbaca defegde hijhklij
+
+"ababcbaca", "defegde", "hijhklij".
+
+
+'''
 
 def test ():
     params = [
