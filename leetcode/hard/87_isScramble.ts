@@ -1,4 +1,4 @@
-function isScramble(s1: string, s2: string): boolean {
+function isScramble_0(s1: string, s2: string): boolean {
     const a1: string = s1.split('').sort().join('');
     const a2: string = s2.split('').sort().join('');
     if (a1 !== a2) {
@@ -97,6 +97,54 @@ function isScramble(s1: string, s2: string): boolean {
     return rec([s1]);
 };
 
+
+
+function isScramble(s1: string, s2: string): boolean {
+    const cache = new Map();
+
+    const rec = (str: string, target: string) => {
+        if (str === target) {
+            return true;
+        }
+        if (str.length === 1) {
+            return false;
+        }
+
+        const key: string = [str, target].join('_');
+        if (cache.has(key)) {
+            return cache.get(key);
+        }
+
+        const charsStr = str.split('').sort().join('');
+        const charsTarget = target.split('').sort().join('');
+
+        if (charsStr !== charsTarget) {
+            return false;
+        }
+
+        let res: boolean = false;
+        for (let i = 1; i < str.length; ++i) {
+            const left: string = str.slice(0, i);
+            const right: string = str.slice(i);
+
+            res = rec(left, target.slice(0, i)) && rec(right, target.slice(i));
+            if (res) {
+                break;
+            }
+
+            res = rec(left, target.slice(target.length - left.length)) && rec(right, target.slice(0, right.length));
+            if (res) {
+                break;
+            }
+        }
+
+        cache.set(key, res);
+
+        return res;
+    };
+
+    return rec(s1, s2);
+};
 /*
 s1: "great", s2: "rgeat"
 great
@@ -133,6 +181,10 @@ const test = () => {
         },
         {
             input: { s1: "abcdefghijklmnopq", s2: "efghijklmnopqcadb" },
+            output: false,
+        },
+        {
+            input: { s1: "eebaacbcbcadaaedceaaacadccd", s2: "eadcaacabaddaceacbceaabeccd" },
             output: false,
         },
     ];
