@@ -1,4 +1,4 @@
-function combinationSum4(nums: number[], target: number): number {
+function combinationSum4_0(nums: number[], target: number): number {
     const memo: Set<string> = new Set();
 
     const checkTarget = (acc: number[], sum: number): void => {
@@ -27,27 +27,41 @@ function combinationSum4(nums: number[], target: number): number {
     return memo.size;
 };
 
-/*
 
-0 1 2 3 4
-1 1 2 3 4
-2 1 1 2 2
-3 0 0 1 0
+function combinationSum4(nums: number[], target: number): number {
+    const memo: Map<number, number> = new Map();
 
+    const getComb = (val: number): number => {
+        if (val < 0) {
+            return 0;
+        }
+        if (val === 0) {
+            return 1;
+        }
+        if (memo.has(val)) {
+            return memo.get(val);
+        }
 
-0 1 2 3 4
-1 1 1 1 1
-2 1 2 2 2
-3
+        let res: number = 0;
+        for (const num of nums) {
+            const r: number = getComb(val - num);
+            res += r;
+        }
 
+        memo.set(val, res);
 
-*/
+        return res;
+    };
+
+    return getComb(target);
+};
+
 
 const test = () => {
     const params = [
         {
             input: { nums: [4,2,1], target: 32 },
-            output: 7,
+            output: 39882198,
         },
         {
             input: { nums: [1,2,3], target: 4 },
