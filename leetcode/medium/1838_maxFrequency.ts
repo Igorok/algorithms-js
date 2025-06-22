@@ -1,18 +1,29 @@
 function maxFrequency(nums: number[], k: number): number {
     nums.sort((a, b) => a - b);
 
-    const diffs: number[] = [];
-    for (let i: number = 0; i < nums.length; ++i) {
-        const prevId: number = (nums.length + i - 1) % nums.length;
-        diffs.push(Math.abs(nums[i] - nums[prevId]));
+    let res: number = 0;
+    let left: number = 0;
+    let sum: number = 0;
+
+    for (let right: number = 0; right < nums.length; ++right) {
+        sum += nums[right];
+        let length: number = right - left + 1;
+
+        while (sum + k < nums[right] * length) {
+            sum -= nums[left];
+            left += 1;
+            length = right - left + 1;
+        }
+
+        res = Math.max(res, length);
     }
 
-
-
-    return 0;
+    return res;
 };
 
 /*
+
+arr[right] * length < sum(arr[left], ..., arr[right])
 
 
 */
