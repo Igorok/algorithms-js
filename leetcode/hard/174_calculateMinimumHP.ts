@@ -1,48 +1,56 @@
+
 function calculateMinimumHP(dungeon: number[][]): number {
     const shifts: number[][] = [[1, 0], [0, 1]];
-    const memo: Map<string, number> = new Map();
 
-    const dfs = (r: number, c: number, curr: number, acc: number) => {
-        if (r === dungeon.length - 1 && c === dungeon[0].length - 1) {
-            return acc;
+    const memo: number[][] = new Array(dungeon.length).fill(0).map(() => new Array(dungeon[0].length).fill(-1));
+
+    const dfs = (row: number, col: number) => {
+        if (row === dungeon.length - 1 && col === dungeon[0].length - 1) {
+            const r: number = dungeon.at(-1).at(-1);
+            return r >= 0 ? 0 : r;
         }
 
-        let res: number = Number.MAX_SAFE_INTEGER;
+        if (memo[row][col] !== -1) {
+            return memo[row][col];
+        }
+
+        let res: number = Number.MIN_SAFE_INTEGER;
+
 
         for (const [sr, sc] of shifts) {
-            const nr: number = r + sr;
-            const nc: number = c + sc;
+            const newRow: number = row + sr;
+            const newCol: number = col + sc;
 
-            if (nr === dungeon.length || nc === dungeon[0].length) {
+            if (newRow === dungeon.length || newCol === dungeon[0].length) {
                 continue;
             }
 
+            let r: number = dfs(newRow, newCol);
+            r += dungeon[row][col];
 
-            let na: number = acc;
-            if (curr + dungeon[nr][nc] < 0) {
-                na += -(curr + dungeon[nr][nc]);
-            }
+
+            res = Math.max(res, r);
         }
 
+        memo[row][col] = res >= 0 ? 0 : res;
 
-        const diff: number = curr + dungeon[r][c];
 
-        if (curr + dungeon[r][c] <= 0) {
-            acc += diff;
-            curr = 0;
-        }
+        return memo[row][col];
+    };
 
-        return 0;
-    }
 
-    const acc: number = dungeon[0][0] >= 0 ? 0 : -dungeon[0][0]
-    const r: number = dfs(0, 0, 0, acc);
-
-    return r+1;
+    let res: number = dfs(0, 0);
+    return 1 + (res >= 0 ? 0 : -res);
 };
 
 const test = () => {
     const params = [
+        {
+            input: {
+                dungeon: [[-3,5]],
+            },
+            output: 4,
+        },
         {
             input: {
                 dungeon: [
@@ -56,6 +64,15 @@ const test = () => {
         {
             input: {
                 dungeon: [[0]],
+            },
+            output: 1,
+        },
+        {
+            input: {
+                dungeon: [
+                    [ 3, -20, 30],
+                    [-3,   4,  0]
+                ],
             },
             output: 1,
         },
