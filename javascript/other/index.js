@@ -65,3 +65,22 @@ async function run() {
 }
 
 var test = 5;
+
+
+let MyObj = function () {
+    this.v = 'v';
+    this.fn = () => {
+        console.log(1, this.v);
+    }
+}
+MyObj.prototype.fn2 = function () {
+    console.log(2, this.v);
+}
+const myObj = new MyObj();
+myObj.fn();
+myObj.fn2();
+
+console.log(
+    myObj.hasOwnProperty('fn'),
+    myObj.hasOwnProperty('fn2'),
+);
