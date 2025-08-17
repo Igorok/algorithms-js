@@ -84,3 +84,13 @@ console.log(
     myObj.hasOwnProperty('fn'),
     myObj.hasOwnProperty('fn2'),
 );
+
+
+const myFn = (x) => {
+    console.log(x);
+};
+myFn.description = 'I am description'
+
+console.log('myFn', myFn.description);
+myFn('My fn launch')
+

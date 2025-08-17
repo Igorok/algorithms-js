@@ -75,9 +75,11 @@ dog.guard();
 
 
 class Parent {
-    #name;
+    #name = 'parent';
     constructor (name) {
+        console.log(1, 'this.#name', this.#name);
         this.#name = name;
+        console.log(2, 'this.#name', this.#name);
     }
     hello() {
         // console.log(`Hello my name is ${this.#name}`, (#name in this));
@@ -89,6 +91,7 @@ const p = new Parent('John');
 p.hello();
 
 class Child extends Parent {
+    #name = 'child';
     buy () {
         // console.log('Goodbuy', this.#name, (#name in this));
         console.log('Goodbuy');
@@ -98,3 +101,17 @@ const c = new Child('Johny');
 c.hello();
 // console.log('c.#name', c.#name); // c.#name Johny
 c.buy();
+
+/////
+class MsgError extends Error {
+  constructor(m) {
+    super(m);
+  }
+  sayHello() {
+    return "hello " + this.message;
+  }
+}
+
+const msgError = new MsgError('Error!');
+console.log(msgError.sayHello());
+

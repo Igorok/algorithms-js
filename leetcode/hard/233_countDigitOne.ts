@@ -1,15 +1,41 @@
 function countDigitOne(n: number): number {
-    return 0;
+    const str: string = String(n);
+    const memo: Map<string, number> = new Map();
+
+    const dfs = (id: number, limited: boolean, acc: number) => {
+        if (id === str.length) {
+            return acc;
+        }
+
+        const key = `${id}_${limited}_${acc}`;
+        if (memo.has(key)) {
+            return memo.get(key);
+        }
+
+        const max: number = limited ? Number(str[id]) : 9;
+
+        let res: number = 0;
+
+        for (let i: number = 0; i <= max; ++i) {
+            const l: boolean = (i == max) && limited;
+            const a: number = i === 1 ? acc + 1 : acc;
+            res += dfs(id + 1, l, a);
+        }
+
+        memo.set(key, res);
+
+        return res;
+    };
+
+
+    return dfs(0, true, 0);
 };
 
 /*
+9252736
+13016474
 
-   - [10, 13] - 10, 11, 12, 13 = 5
-13 - [0, 9] - 0,1,2,3,4,5,6,7,8,9 = 1
 
-    - [100, 111]
-111 - [0-99] - [10-19] -[0-9]
-             - [20-29] -[0-9]
 */
 const test = () => {
     const params = [
@@ -30,6 +56,12 @@ const test = () => {
                 n: 111,
             },
             output: 36,
+        },
+        {
+            input: {
+                n: 500,
+            },
+            output: 200,
         },
         {
             input: {
