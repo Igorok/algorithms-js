@@ -4,59 +4,55 @@ import heapq
 
 class Solution:
     def maxAverageRatio(self, classes: List[List[int]], extraStudents: int) -> float:
-        res = 0;
-        data = []
+        total = 0
+        classQueue = []
         for p, t in classes:
-            ratio = p/t
-            if ratio == 1:
-                res += 1
-            else:
-                key = (p + 1) / (t + 1) - p/t
-                data.append((-key, (p, t)))
+            if p == t:
+                total += 1
+                continue
 
-        heapq.heapify(data)
+            profit = (p+1)/(t+1) - p/t
+            classQueue.append((-profit, p, t))
 
-        while extraStudents > 0 and len(data) > 0:
-            key, arr = heapq.heappop(data)
-            p, t = arr
-            if len(data) == 0:
-                heapq.heappush(data, (1, (p + extraStudents, t + extraStudents)))
-                extraStudents = 0
-                break
+        heapq.heapify(classQueue)
 
+        while len(classQueue) > 0 and extraStudents > 0:
+            profit, p, t = heapq.heappop(classQueue)
+            profit = -profit
+
+            extraStudents -= 1
             p += 1
             t += 1
-            extraStudents -= 1
-            key = (p + 1) / (t + 1) - p/t
-            heapq.heappush(data, (-key, (p, t)))
+            profit = (p+1)/(t+1) - p/t
 
-        for key, arr in data:
-            p, t = arr
-            res += (p / t)
+            heapq.heappush(classQueue, (-profit, p, t))
 
-        return res / len(classes)
+        for profit, p, t in classQueue:
+            total += p / t
 
-'''
-1, 1000
-1, 5
-1, 2
-
-
+        return total / len(classes)
 
 '''
+(5/6 + 5/7 + 2/10 + 3/9) / 4
 
 
+[[[2,4],[3,9],[4,5],[2,10]], 4],
+
+(2/4 + 3/9 + 4/5 + 2/10) / 4
+
+'''
 
 def test ():
     params = [
         {
-            'input': [ [[1,2],[3,5],[2,2]], 2],
-            'output': 0.78333,
-        },
-        {
             'input': [[[2,4],[3,9],[4,5],[2,10]], 4],
             'output': 0.53485,
         },
+        {
+            'input': [ [[1,2],[3,5],[2,2]], 2],
+            'output': 0.78333,
+        },
+
     ]
     solution = Solution()
 
