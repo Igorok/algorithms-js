@@ -2,47 +2,74 @@ from typing import List
 import json
 from collections import deque, defaultdict
 
+
 class Solution:
+    """
+    Solves the 'Find Sum of Array Product of Magical Sequences' problem using Dynamic Programming.
+
+    The core idea is to simulate the binary addition required by the magical condition:
+    N = sum(c_j * 2^j), where c_j is the count of index j in the sequence (sum(c_j) = m).
+    The DP simultaneously tracks:
+    1. The total count used (must equal m).
+    2. The carry propagating through the binary addition.
+    3. The number of set bits (1s) found so far (must equal k).
+
+    The accumulated value in the DP state is the sum of products, normalized by 1/c_j!,
+    which is corrected by multiplying by m! at the end (Multinomial Theorem).
+    """
+
+    def quickmul(self, x: int, y: int, mod: int) -> int:
+        """
+        Calculates (x^y) % mod using binary exponentiation.
+        This is used to find modular inverses (a^-1) for division modulo P.
+        """
+        res, cur = 1, x % mod
+        while y:
+            if y & 1:
+                res = res * cur % mod
+            y >>= 1
+            cur = cur * cur % mod
+        return res
+
     def magicalSum(self, m: int, k: int, nums: List[int]) -> int:
-        # return (x**y)%mod
-        def quickmul(x, y, mod):
-            res = 1
-            while y > 0:
-                if y & 1:
-                    res = (res * x) % mod
-                x = (x*x) % mod
-                y = y >> 1
-            return res
-
-        # print(
-        #     '2**5', quickmul(2, 5, mod)
-        # )
-
         n = len(nums)
-        mod = 7 + 10**9
+        mod = 10**9 + 7
 
-        # list factorials
-        fac = [1] * (m+1)
-        for i in range(2, m+1):
-            fac[i] = (i * fac[i-1]) % mod
+        # --- Pre-computation 1: Factorials and Inverse Factorials ---
 
-        # fermat theorem
-        # (x(mod y))**-1 = (x**y-2)(mod y)
-        ifac = [1] * (m+1)
-        # calculate every number x**(y-2)
-        for i in range(2, m+1):
-            ifac[i] = quickmul(i, mod-2, mod)
-        # calculate factorials from numbers x**(y-2)
-        for i in range(2, m+1):
-            ifac[i] = (ifac[i-1] * ifac[i]) % mod
+        # fac[i] = i! % mod
+        fac = [1] * (m + 1)
+        for i in range(1, m + 1):
+            fac[i] = fac[i - 1] * i % mod
 
-        # accumulate all powers of possible numbers
-        nums_power = [[1] * (m+1) for _ in range(n)]
+        # inv_fac[i] = (1/i!) % mod. Essential for the Multinomial Theorem.
+        inv_fac = [1] * (m + 1)
+        inv_fac[0] = 1 # 1/0!
+        inv_fac[1] = 1 # 1/1!
+
+        # Step 1: Calculate the modular inverse for each number i (i.e., 1/i % mod)
+        #         and store it temporarily in inv_fac[i].
+        for i in range(2, m + 1):
+            # Using Fermat's Little Theorem: i^(mod-2) = i^-1 mod mod
+            inv_fac[i] = self.quickmul(i, mod - 2, mod)
+
+        # Step 2: Calculate the cumulative inverse factorial (i!)^-1 iteratively.
+        # inv_fac[i] = inv_fac[i-1] * (1/i) = 1/((i-1)!) * (1/i) = 1/i!
+        for i in range(2, m + 1):
+            inv_fac[i] = inv_fac[i - 1] * inv_fac[i] % mod
+
+
+        # --- Pre-computation 2: Powers of nums[i] ---
+
+        # nums_power[i][j] = (nums[i] ** j) % mod. Used to quickly get the product factor.
+        nums_power = [[1] * (m + 1) for _ in range(n)]
         for i in range(n):
-            for j in range(1, m+1):
-                nums_power[i][j] = (nums_power[i][j-1] * nums[i]) % mod
+            for j in range(1, m + 1):
+                nums_power[i][j] = nums_power[i][j - 1] * nums[i] % mod
 
-         # DP state dp_table[idx_i][total_count][prev_carry_raw][set_bits_counted]:
+        # --- Dynamic Programming Setup ---
+
+        # DP state dp_table[idx_i][total_count][prev_carry_raw][set_bits_counted]:
         # idx_i: Index (exponent 2^i) currently being processed. 0 <= idx_i < n.
         # total_count: Total number of indices chosen so far (sum(c_l for l=0 to i)). 0 <= total_count <= m.
         # prev_carry_raw: The "raw count" or coefficient at position 2^i, which is (c_i + carry_in).
@@ -50,19 +77,104 @@ class Solution:
         # set_bits_counted: Number of set bits (1s) found in the binary sum N up to position 2^(i-1). 0 <= set_bits_counted <= k.
         # Value: The accumulated sum of products, normalized by factorials: sum( product( (nums[l]**c_l) / c_l! ) ).
 
+        MAX_CARRY_STATE = m * 2 + 1
 
-        return 0
+        dp_table = [
+            [[[0] * (k + 1) for _ in range(MAX_CARRY_STATE)] for _ in range(m + 1)]
+            for _ in range(n)
+        ]
 
-'''
-2**5
-1
-x=2; res = 1*2=2; d=5;
-x=2*2=4; res=2; d=2;
-x=4**2=16; res=8*16=; d=0;
+        # --- Base Case: Processing the first index idx_i=0 (exponent 2^0) ---
+
+        # Iterate over c0 (the count of index 0)
+        for c0 in range(m + 1):
+            # c0: total_count used (c0)
+            # c0: raw carry state (c0 + 0 carry_in)
+            # 0: set bits found before index 0
+            dp_table[0][c0][c0][0] = nums_power[0][c0] * inv_fac[c0] % mod
 
 
+        # --- DP Transition (from index idx_i to idx_i+1) ---
 
-'''
+        # idx_i: current index/exponent we are transitioning FROM
+        for idx_i in range(n - 1):
+            for total_count_prev in range(m + 1):
+                for prev_carry_raw in range(MAX_CARRY_STATE):
+                    for prev_set_bits in range(k + 1):
+
+                        current_value = dp_table[idx_i][total_count_prev][prev_carry_raw][prev_set_bits]
+                        if current_value == 0:
+                            continue
+
+                        # 1. Determine the bit and carry generated at the current position idx_i
+
+                        # bit_i: The bit at position 2^idx_i (i.e., (c_i + carry_in) % 2)
+                        bit_i = prev_carry_raw % 2
+
+                        # carry_to_next: The carry propagating to position 2^(idx_i+1)
+                        carry_to_next = prev_carry_raw // 2
+
+                        # total_set_bits_up_to_i: set bits found up to index idx_i
+                        total_set_bits_up_to_i = bit_i + prev_set_bits
+
+                        if total_set_bits_up_to_i > k:
+                            # Optimization: if k is exceeded, this path is invalid
+                            continue
+
+                        # 2. Iterate over the choice c_next = c_{idx_i+1} for the next index
+                        for c_next in range(m - total_count_prev + 1):
+
+                            # next_carry_raw: The raw sum at position (idx_i + 1) before division by 2
+                            # next_carry_raw = (carry_from_i) + (new_coefficient c_next)
+                            next_carry_raw = carry_to_next + c_next
+
+                            if next_carry_raw >= MAX_CARRY_STATE:
+                                # Optimization: carry is too large for the state size
+                                continue
+
+                            new_total_count = total_count_prev + c_next
+
+                            # 3. Calculate the product factor: (nums[idx_i+1] ^ c_next) * (1 / c_next!)
+                            factor = (
+                                nums_power[idx_i + 1][c_next]
+                                * inv_fac[c_next]
+                                % mod
+                            )
+
+                            term = current_value * factor % mod
+
+                            # 4. Update the next state:
+                            dp_table[idx_i + 1][new_total_count][next_carry_raw][total_set_bits_up_to_i] = (
+                                dp_table[idx_i + 1][new_total_count][next_carry_raw][total_set_bits_up_to_i]
+                                + term
+                            ) % mod
+
+        # --- Final Result Calculation ---
+
+        final_idx = n - 1
+        final_sum_of_products = 0
+
+        # Check all possible final carry states and set bit counts
+        # We must ensure the total count is exactly m
+        for remaining_carry_raw in range(MAX_CARRY_STATE):
+            for set_bits_counted in range(k + 1):
+
+                # The total set bits K is composed of:
+                # 1. set_bits_counted (q): Set bits found up to position n-1 (from the transition logic).
+                # 2. set bits in remaining_carry_raw (p): The final carry represents higher-order bits (2^n, 2^(n+1), etc.).
+
+                remaining_set_bits = bin(remaining_carry_raw).count("1")
+
+                if remaining_set_bits + set_bits_counted == k:
+
+                    # Accumulate the normalized sum from the DP table
+                    normalized_sum = dp_table[final_idx][m][remaining_carry_raw][set_bits_counted]
+
+                    # Final step: Multiply by m! to undo the (1/c_j!) normalization (Multinomial Theorem).
+                    res_term = normalized_sum * fac[m] % mod
+                    final_sum_of_products = (final_sum_of_products + res_term) % mod
+
+        return final_sum_of_products
 
 def test():
     params = [
