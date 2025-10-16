@@ -1,9 +1,9 @@
 from typing import List
 import json
 from collections import deque, defaultdict
+from functools import lru_cache
 
-
-class Solution:
+class Solution_0:
     """
     Solves the 'Find Sum of Array Product of Magical Sequences' problem using Dynamic Programming.
 
@@ -176,12 +176,112 @@ class Solution:
 
         return final_sum_of_products
 
+
+
+class Solution:
+    def magicalSum(self, m: int, k: int, nums: List[int]) -> int:
+        mod = 7 + 10**9
+        n = len(nums)
+        numsPower = [[1] * (m+1) for i in range(n)]
+        for i in range(n):
+            for j in range(1, m+1):
+                numsPower[i][j] = (numsPower[i][j-1] * nums[i]) % mod
+
+        factorials = [1 for i in range(m+1)]
+        for i in range(2, m+1):
+            factorials[i] = (i * factorials[i-1]) % mod
+
+        # how many bit will have new number?
+        def getBits(carry):
+            res = 0
+            while carry > 0:
+                res += (carry & 1)
+                carry >>= 1
+            return res
+
+        # return (x**y)%mod
+        def quickpower(x: int, y: int, mod: int) -> int:
+            res = 1
+            while y > 0:
+                if y & 1:
+                    res = (res * x) % mod
+                x = (x ** 2) % mod
+                y >>= 1
+
+            return res
+
+        # inv_fac[i] = (1/i!) % mod. Essential for the Multinomial Theorem.
+        inv_fac = [1] * (m + 1)
+
+        # Step 1: Calculate the modular inverse for each number i (i.e., 1/i % mod)
+        #         and store it temporarily in inv_fac[i].
+        for i in range(2, m + 1):
+            # Using Fermat's Little Theorem: i^(mod-2) = i^-1 mod mod
+            inv_fac[i] = quickpower(i, mod - 2, mod)
+
+        # Step 2: Calculate the cumulative inverse factorial (i!)^-1 iteratively.
+        # inv_fac[i] = inv_fac[i-1] * (1/i) = 1/((i-1)!) * (1/i) = 1/i!
+        for i in range(2, m + 1):
+            inv_fac[i] = inv_fac[i - 1] * inv_fac[i] % mod
+
+        @lru_cache(None)
+        def dfs(id, used, carry, bits):
+            if id == n:
+                countOfBits = bits + getBits(carry)
+                return 1 if countOfBits == k and used == m else 0
+
+            res = 0
+
+            available = m - used
+            for cnt in range(available + 1):
+                bit = ((cnt + carry) & 1)
+                newUsed = used + cnt
+                # what is new carry? old carry + new bits will carrying forward, prev position skipped
+                newCarry = ((carry + cnt) >> 1)
+                newBits = bits + bit
+
+                r = dfs(id + 1, newUsed, newCarry, newBits)
+                if r == 0:
+                    continue
+
+                num = nums[id]
+
+                currentPower = numsPower[id][cnt]
+                combinations = factorials[available] * inv_fac[available-cnt] % mod
+                combinations = combinations * inv_fac[cnt] % mod
+
+
+                impact = (currentPower * combinations) % mod
+                impact = (r * impact) % mod
+                res = (res + impact) % mod
+
+            return res
+
+
+        return dfs(0, 0, 0, 0)
+
+'''
+3 = 011
+001
+001
+=
+010
+
+010
+001
+=
+011
+
+---
+
+
+
+'''
+
+
+
 def test():
     params = [
-        {
-            "input": [5, 5, [1,10,100,10000,1000000]],
-            "output": 991600007,
-        },
         {
             "input": [2, 2, [5,4,3,2,1]],
             "output": 170,
@@ -189,6 +289,19 @@ def test():
         {
             "input": [1, 1, [28]],
             "output": 28,
+        },
+
+        {
+            "input": [5, 5, [1,10,100,10000,1000000]],
+            "output": 991600007,
+        },
+        {
+            "input": [10, 6, [79,8,75,37,81]],
+            "output": 599614523,
+        },
+        {
+            "input": [13, 8, [52900,36842,43727,57290,97561,94545,84642,68215,91601,76832,52673,94789,6123,70762,73080,11830,57262,93991,95078,95082,58420,62723]],
+            "output": 120815395,
         },
     ]
     solution = Solution()
