@@ -2,8 +2,8 @@ from typing import List
 import json
 from collections import deque, defaultdict
 
-class Solution:
-    def minOperations_0(self, nums: List[int]) -> int:
+class Solution_0:
+    def minOperations(self, nums: List[int]) -> int:
         n = len(nums)
 
         res = 0
@@ -20,36 +20,33 @@ class Solution:
 
 
 
+class Solution:
+    def minOperations(self, nums: List[int]) -> int:
+        n = len(nums)
+        res = 0
+
+        for i in range(n):
+            if nums[i] == 1:
+                continue
+
+            if i + 3 > n:
+                return -1
+
+            res += 1
+            for j in range(i, i+3):
+                nums[j] = 1 if nums[j] == 0 else 0
+
+        return res
 
 
 
 '''
 
-0,1,1,1,0,0
-1 0 0 1 0 0
-1 1 1 0 0 0
-1 1 1 1 1 1
-
----
-
-0 1 1 1
-1 0 0 1
-1 1 1 0
-
----
-
-0 0 1 1
-1 1 0 1
-
----
-
 0 0 1 0 0
 1 1 0 0 0
 1 1 1 1 1
 
----
-0 0 1 1 1
-
+1 1 1 1 1 0 0
 
 
 

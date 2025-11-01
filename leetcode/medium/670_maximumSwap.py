@@ -4,32 +4,20 @@ import math
 class Solution:
     def maximumSwap(self, num: int) -> int:
         data = list(str(num))
-        dataSorted = [(data[i], i) for i in range(len(data))]
-        dataSorted = sorted(dataSorted, key=lambda x: -int(x[0]))
+        n = len(data)
+        rightMax = [None]*n
+        rightMax[n-1] = (data[-1], n-1)
 
-        print(
-            'data', data,
-            'dataSorted', dataSorted,
-        )
+        for i in range(n-2, -1, -1):
+            rightMax[i] = rightMax[i+1] if rightMax[i+1][0] >= data[i] else (data[i], i)
 
-        toReplaceId = None
-        maxNum = None
-        for i in range(len(data)):
-            v = data[i]
-            vs = dataSorted[i][0]
-            ids = dataSorted[i][1]
-            if v != vs and ids > i and toReplaceId == None:
-                toReplaceId = i
-                maxNum = dataSorted[i]
-            if maxNum != None and dataSorted[i][0] >= maxNum[0]:
-                maxNum = dataSorted[i]
+        for i in range(n):
+            if data[i] < rightMax[i][0]:
+                id = rightMax[i][1]
+                data[i], data[id] = data[id], data[i]
+                break
 
-        if toReplaceId != None:
-            data[toReplaceId], data[maxNum[1]] = data[maxNum[1]], data[toReplaceId]
-            return int(''.join(data))
-
-
-        return num
+        return int(''.join(data))
 
 
 def test ():
