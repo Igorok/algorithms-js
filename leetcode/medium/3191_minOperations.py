@@ -2,63 +2,29 @@ from typing import List
 import json
 from collections import deque, defaultdict
 
-class Solution_0:
-    def minOperations(self, nums: List[int]) -> int:
-        n = len(nums)
-
-        res = 0
-        for i in range(n):
-            if nums[i] == 0:
-                if i + 3 > n:
-                    return -1
-
-                res += 1
-                for j in range(i, i + 3):
-                    nums[j] = 0 if nums[j] == 1 else 1
-
-        return res
-
-
 
 class Solution:
     def minOperations(self, nums: List[int]) -> int:
-        n = len(nums)
+        N = len(nums)
         res = 0
+        for i in range(N):
+            if nums[i] == 0:
+                if i + 3 > N:
+                    return -1
+                res += 1
+                for j in range(i, i+3):
+                    nums[j] = 1 if nums[j] == 0 else 0
 
-        for i in range(n):
-            if nums[i] == 1:
-                continue
-
-            if i + 3 > n:
-                return -1
-
-            res += 1
-            for j in range(i, i+3):
-                nums[j] = 1 if nums[j] == 0 else 0
-
-        return res
-
-
-
-'''
-
-0 0 1 0 0
-1 1 0 0 0
-1 1 1 1 1
-
-1 1 1 1 1 0 0
-
-
-
-
-'''
-
-
+        return res if nums[-1] == 1 else -1
 
 
 
 def test ():
     params = [
+        {
+            'input': [1,0,0,1,1,0,1,1,1],
+            'output': -1,
+        },
         {
             'input': [0,1,1,1,0,0],
             'output': 3,

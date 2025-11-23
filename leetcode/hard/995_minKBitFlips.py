@@ -4,12 +4,35 @@ from collections import deque, defaultdict
 
 class Solution:
     def minKBitFlips(self, nums: List[int], k: int) -> int:
-        return -1
+        N = len(nums)
+        res = 0
+
+        for i in range(N):
+            if nums[i] == 0:
+                if i + k > N:
+                    return -1
+
+                res += 1
+                for j in range(i, i+k):
+                    nums[j] = 1 if nums[j] == 0 else 0
+
+        return res
 
 '''
 
-1 1 0 1 1 0 0
-0 0 1 0 0
+[0,0,0,1,0,1,1,0], 3
+
+0,0,0,1,0,1,1,0
+1 1 1,1,0,1,1,0
+1 1 1,1,1 0 0 0
+1 1 1,1,1 1 1 1
+
+0,0,0,1,0,1,1,0
+1 1 1 0 0 0 0 0
+
+
+
+
 
 '''
 
