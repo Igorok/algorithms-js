@@ -1,6 +1,7 @@
 from typing import List
+from collections import deque
 
-class Solution:
+class Solution_0:
     def minSubarray(self, nums: List[int], p: int) -> int:
         idsByRemainder = {0: -1}
         rem = sum(nums) % p
@@ -23,19 +24,112 @@ class Solution:
 
         return -1 if length == len(nums) else length
 
+
+class Solution_0:
+    def minSubarray(self, nums: List[int], p: int) -> int:
+        N = len(nums)
+        prefixesMap = {}
+        prefixesArr = [0]*N
+        acc = 0
+
+        for i in range(N):
+            acc = (acc + nums[i]) % p
+            prefixesArr[i] = acc
+            prefixesMap[acc] = prefixesMap.get(acc, deque())
+            prefixesMap[acc].append(i)
+
+        if acc == 0:
+            return 0
+
+        res = -1
+        for i in range(N):
+            prev = 0 if i == 0 else prefixesArr[i-1]
+            val = (prev + acc) % p
+            if not val in prefixesMap:
+                continue
+
+            while prefixesMap[val] and prefixesMap[val][0] < i:
+                prefixesMap[val].popleft()
+
+            if not prefixesMap[val]:
+                continue
+
+            r = prefixesMap[val][0] - i + 1
+            if res == -1:
+                res = r
+            else:
+                res = min(res, r)
+
+
+
+        return res
+
+class Solution:
+    def minSubarray(self, nums: List[int], p: int) -> int:
+        N = len(nums)
+        prefixesMap = {}
+        prefixesArr = [0]*N
+        prefixesSum = [0]*N
+        acc = 0
+
+        for i in range(N):
+            acc = (acc + nums[i]) % p
+            prefixesArr[i] = acc
+            prefixesMap[acc] = prefixesMap.get(acc, deque())
+            prefixesMap[acc].append(i)
+
+            prefixesSum[i] = nums[i] + (0 if i == 0 else prefixesSum[i-1])
+
+        if acc == 0:
+            return 0
+
+        res = -1
+        for i in range(N):
+            prev = 0 if i == 0 else prefixesArr[i-1]
+            val = (prev + acc) % p
+            if not val in prefixesMap:
+                continue
+
+            while prefixesMap[val] and prefixesMap[val][0] < i:
+                prefixesMap[val].popleft()
+
+            if not prefixesMap[val]:
+                continue
+
+            prev = 0 if i == 0 else prefixesSum[i-1]
+            removed = prefixesSum[prefixesMap[val][0]] - prev
+
+            if prefixesSum[-1] - removed < p:
+                continue
+
+            r = prefixesMap[val][0] - i + 1
+            if res == -1:
+                res = r
+            else:
+                res = min(res, r)
+
+
+
+        return res
+
 '''
+6
+1 1 1 1 2 2 4; s = 16; 16-4=12; 12%6=0;
+4
+1 2 3 4 6 2 4
 
-3,1,4,2
+4
+x + 4 = y
 
-x,1,4,2
-x,x,x,x
 
-3,x,x,x
-3,1,x,2
 '''
 
 def test ():
     params = [
+        {
+            'input': [[1,2,3], 7],
+            'output': -1,
+        },
         {
             'input': [[3,1,4,2], 6],
             'output': 1,
