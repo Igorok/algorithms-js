@@ -1,29 +1,40 @@
 import json
 from collections import defaultdict, deque
 from typing import List
-
+import heapq
 
 class Solution:
-    def maximumProfit(self, prices: List[int], k: int) -> int:
-        return 0
+    def maximumHappinessSum(self, happiness: List[int], k: int) -> int:
+        happiness.sort(key = lambda x: -x)
+        res = 0
+        for i in range(k):
+            r = max(0, happiness[i] - i)
+            if r == 0:
+                break
+            res += r
+        return res
 
 
 def test():
     params = [
         {
-            "input": [[1,7,9,8,2], 2],
-            "output": 14,
+            "input": [[1,2,3], 2],
+            "output": 4,
         },
         {
-            "input": [[12,16,19,19,8,1,19,13,9], 3],
-            "output": 36,
+            "input": [[1,1,1,1], 2],
+            "output": 1,
+        },
+        {
+            "input": [[2,3,4,5], 1],
+            "output": 5,
         },
     ]
     solution = Solution()
 
     for param in params:
-        prices, k = param["input"]
-        result = solution.maximumProfit(prices, k)
+        happiness, k = param["input"]
+        result = solution.maximumHappinessSum(happiness, k)
         correct = json.dumps(result) == json.dumps(param["output"])
 
         msg = "SUCCESS" if correct else "ERROR"
