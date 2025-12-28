@@ -91,8 +91,15 @@ class Solution:
                 for bud in range(budget, -1, -1):
                     for left in range(bud + 1):
                         right = bud - left
-                        childBare[bud] = max(childBare[bud], childBare[left] + _chBare[right])
-                        childSale[bud] = max(childSale[bud], childSale[left] + _chSale[right])
+                        childBare[bud] = max(childBare[bud], _chBare[left] + childBare[right])
+                        childSale[bud] = max(childSale[bud], _chSale[left] + childSale[right])
+
+            # for nei in adj[id]:
+            #     _chBare, _chSale = dfs(nei)
+            #     for bud in range(budget, -1, -1):
+            #         for neiBud in range(bud+1):
+            #             childBare[bud] = max(childBare[bud], childBare[bud-neiBud] + _chBare[neiBud])
+            #             childSale[bud] = max(childSale[bud], childSale[bud-neiBud] + _chSale[neiBud])
 
             for bud in range(budget + 1):
                 # bare
@@ -159,6 +166,16 @@ def test():
                 28,
             ],
             "output": 96,
+        },
+        {
+            "input": [
+                4,
+                [42,9,1,12],
+                [35,41,18,46],
+                [[1,3],[1,4],[1,2]],
+                94,
+            ],
+            "output": 88,
         },
     ]
     solution = Solution()

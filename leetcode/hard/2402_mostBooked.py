@@ -1,51 +1,62 @@
 from typing import List
 import json
 import heapq
+from collections import defaultdict
+
 
 class Solution:
     def mostBooked(self, n: int, meetings: List[List[int]]) -> int:
-        meetingsInRoom = [0]*n
-        rooms = [(0, i) for i in range(n)]
-        heapq.heapify(rooms)
-        meetings = sorted(meetings)
+        M = len(meetings)
+        meetings.sort()
 
-        id = 0
-        time = 0
-        l = len(meetings)
-        while id < l:
-            if time < rooms[0][0]:
-                time = rooms[0][0]
+        meetQueue = []
+        roomsQueue = [i for i in range(n)]
+        heapq.heapify(roomsQueue)
 
-            if id < l and time < meetings[id][0]:
-                time = meetings[id][0]
-
-            while time > rooms[0][0]:
-                room = heapq.heappop(rooms)
-                heapq.heappush(rooms, (time, room[1]))
-
-            while time >= rooms[0][0] and id < l and time >= meetings[id][0]:
-                room = heapq.heappop(rooms)
-                duration = meetings[id][1] - meetings[id][0]
-                heapq.heappush(rooms, (time + duration, room[1]))
-                meetingsInRoom[room[1]] += 1
-                id += 1
-
-            time += 1
-
+        cnt = defaultdict(int)
         res = 0
+        t = 0
 
-        for i in range(n):
-            if meetingsInRoom[i] > meetingsInRoom[res]:
-                res = i
+        for i in range(M):
+            start, end = meetings[i]
+            t = max(t, start)
+
+            while meetQueue and meetQueue[0][0] <= t:
+                time, room = heapq.heappop(meetQueue)
+                heapq.heappush(roomsQueue, room)
+
+            roomId = -1
+            if roomsQueue:
+                roomId = heapq.heappop(roomsQueue)
+            else:
+                time, _room = heapq.heappop(meetQueue)
+                t = max(t, time)
+                roomId = _room
+
+            tEnd = t + end - start
+            heapq.heappush(meetQueue, (tEnd, roomId))
+
+
+            cnt[roomId] += 1
+
+            if cnt[roomId] > cnt[res] or (cnt[roomId] == cnt[res] and roomId < res):
+                res = roomId
 
         return res
 
-
 '''
+[4, [[18,19],[3,12],[17,19],[2,13],[7,10]]]
+
 [[2, 13], [3, 12], [7, 10], [17, 19], [18, 19]]
+0 - 2,13
+1 - 3,12
+2 - 7,10
+3 - 17,19
+---
 
 
 '''
+
 
 def test ():
     params = [
