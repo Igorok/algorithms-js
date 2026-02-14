@@ -2,7 +2,7 @@ from typing import List
 import json
 from collections import deque, defaultdict
 
-class Solution:
+class Solution_0:
     def minimumDeletions(self, s: str) -> int:
         n = len(s)
         aTotal = 0
@@ -30,11 +30,80 @@ class Solution:
 
         return res
 
+
+
+class Solution_1:
+    def minimumDeletions(self, s: str) -> int:
+        N = len(s)
+
+        @cache
+        def dfs(id, isB):
+            if id == N:
+                return 0
+
+            r = 0
+            if s[id] == 'a':
+                if isB:
+                    return 1 + dfs(id+1, isB)
+                else:
+                    return dfs(id+1, isB)
+            else:
+                if isB:
+                    return dfs(id+1, isB)
+                else:
+                    r1 = 1 + dfs(id+1, isB)
+                    r2 = dfs(id+1, True)
+                    return min(r1, r2)
+
+            return 0
+
+        return dfs(0, False)
+
+
+class Solution:
+    def minimumDeletions(self, s: str) -> int:
+        N = len(s)
+        aCount = [0] * N
+        bCount = [0] * N
+
+        aCount[0] = 1 if s[0] == 'a' else 0
+        bCount[0] = 1 if s[0] == 'b' else 0
+
+        for i in range(1, N):
+            aCount[i] = aCount[i-1] if s[i] == 'b' else aCount[i-1]+1
+            bCount[i] = bCount[i-1] if s[i] == 'a' else bCount[i-1]+1
+
+        res = min(aCount[-1], bCount[-1])
+
+        for i in range(0, N):
+            prevA = 0 if i == 0 else aCount[i-1]
+            prevB = 0 if i == 0 else bCount[i-1]
+
+            nextA = aCount[-1] - prevA
+
+            res = min(res, prevB + nextA)
+
+        return res
+
 '''
 
 a a b a b b a b
 1 2 2 3 3 3 4 4
 0 0 1 1 2 3 3 4
+
+a a a b b a b b
+
+---
+
+
+b b a a a a a b b
+0 0 1 2 3 4 5 5 5
+1 2 2 2 2 2 2 3 4
+
+b b b b a a a a a
+0 0 0 0 1 2 3 4 5
+1 2 3 4 4 4 4 4 4
+5 6 7 8
 
 '''
 
