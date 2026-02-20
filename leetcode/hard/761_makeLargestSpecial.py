@@ -3,6 +3,8 @@ import heapq
 import math
 from collections import defaultdict, deque
 
+
+'''
 class Solution_0:
     def makeLargestSpecial(self, s: str) -> str:
         N = len(s)
@@ -84,25 +86,47 @@ class Solution:
             return ''.join(acc)
 
         return dfs(s)
+'''
+
+class Solution:
+    def makeLargestSpecial(self, s: str) -> str:
+
+        def dfs(text):
+            N = len(text)
+            arr = []
+
+            cnt = 0
+            left = 0
+
+            for right in range(N):
+                val = 1 if text[right] == '1' else -1
+                cnt += val
+
+                if cnt == 0 and left != right:
+                    converted = '1' + dfs(text[left+1:right]) + '0'
+                    arr.append(converted)
+                    left = right + 1
+
+            arr.sort(reverse = True)
+            return ''.join(arr)
+
+        return dfs(s)
+
 
 '''
+
 11011000
+
+1 101100 0
+
+
+1011100010
+10 111000 10
+
+
+11011000
+1 101100 0
 1 10 1100 0
-1 10 1100 0
-
----
-
-1100 1100 10 1100 110100 10 11110000 1100 111110100000 10
-
----
-111110100000111100001101001100110011001100101010
-
-
----
-
-1100101100
-1100 10 1100
-
 
 '''
 
