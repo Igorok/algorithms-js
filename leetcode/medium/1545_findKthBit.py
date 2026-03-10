@@ -1,7 +1,7 @@
 from typing import List
 from json import dumps
 
-class Solution:
+class Solution_0:
     def findKthBit_1(self, n: int, k: int) -> str:
         res = '0'
         for i in range(1, n):
@@ -32,6 +32,59 @@ class Solution:
 
         return rec(length, k)
 
+
+class Solution_0:
+    def findKthBit(self, n: int, k: int) -> str:
+        text = '0'
+        def reverse(text):
+            text = list(text)
+            text.reverse()
+            return ''.join(text)
+
+        def invert(text):
+            res = ['0'] * len(text)
+            for i in range(len(text)):
+                res[i] = '0' if text[i] == '1' else '1'
+            return res
+
+        for i in range(n):
+            text = text + '1' + reverse(invert(text))
+            if len(text) > k:
+                break
+
+        print(text)
+
+        return text[k-1]
+
+
+class Solution:
+    def findKthBit(self, n: int, k: int) -> str:
+        text = '0'
+        def reverse(text):
+            text = list(text)
+            text.reverse()
+            return ''.join(text)
+
+        def invert(text):
+            res = ['0'] * len(text)
+            for i in range(len(text)):
+                res[i] = '0' if text[i] == '1' else '1'
+            return res
+
+        for i in range(n):
+            text = text + '1' + reverse(invert(text))
+            if len(text) > k:
+                break
+
+        print(text)
+
+        return text[k-1]
+
+
+'''
+0111001
+011100110110001
+'''
 
 def test ():
     params = [
