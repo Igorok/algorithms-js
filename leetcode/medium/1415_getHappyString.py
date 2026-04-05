@@ -2,7 +2,7 @@ from typing import List
 import json
 from collections import deque
 
-class Solution:
+class Solution_0:
     def getHappyString(self, n: int, k: int) -> str:
         chars = ('a', 'b', 'c')
         used = set()
@@ -29,6 +29,36 @@ class Solution:
 
         return ''
 
+
+class Solution:
+    def getHappyString(self, n: int, k: int) -> str:
+        if 3**n < k:
+            return ''
+
+
+        memo = []
+
+        def rec(acc):
+            nonlocal n, k, memo
+            chars = ('a', 'b', 'c')
+
+            if len(acc) == n:
+                memo.append(acc)
+                return
+
+            if len(memo) == k:
+                return
+
+            for char in chars:
+                if acc and acc[-1] == char:
+                    continue
+                rec(acc + char)
+
+        rec('')
+
+        return memo[k-1] if len(memo) >= k else ''
+
+
 def test ():
     params = [
         {
@@ -41,6 +71,10 @@ def test ():
         },
         {
             'input': [3, 9],
+            'output': 'cab',
+        },
+        {
+            'input': [2, 7],
             'output': 'cab',
         },
     ]
