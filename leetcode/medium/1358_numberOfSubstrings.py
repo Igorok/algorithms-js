@@ -1,12 +1,13 @@
-from typing import List
 import json
-from collections import deque, defaultdict
 import math
+from collections import defaultdict, deque
+from typing import List
 
-class Solution:
+
+class Solution_0:
     def numberOfSubstrings(self, s: str) -> int:
         n = len(s)
-        abc = 'abc'
+        abc = "abc"
         abcDict = {}
         res = 0
         start = 0
@@ -28,7 +29,30 @@ class Solution:
 
         return res
 
-'''
+
+class Solution:
+    def numberOfSubstrings(self, s: str) -> int:
+        acc = {"a": 0, "b": 0, "c": 0}
+
+        N = len(s)
+        res = 0
+        left = 0
+
+        for right in range(N):
+            if s[right] in acc:
+                acc[s[right]] += 1
+
+            while acc["a"] > 0 and acc["b"] > 0 and acc["c"] > 0:
+                if s[left] in acc:
+                    acc[s[left]] -= 1
+                left += 1
+
+                res += N - right
+
+        return res
+
+
+"""
 
 abcabcaaa
 9-2=7
@@ -37,43 +61,44 @@ abcabcaaa
 9-5=4
 9-6=3
 
-'''
+"""
 
-def test ():
+
+def test():
     params = [
         {
-            'input': 'abcabc',
-            'output': 10,
+            "input": "abcabc",
+            "output": 10,
         },
         {
-            'input': 'aaacb',
-            'output': 3,
+            "input": "aaacb",
+            "output": 3,
         },
         {
-            'input': 'abc',
-            'output': 1,
+            "input": "abc",
+            "output": 1,
         },
         {
-            'input': 'abcabcaaa',
-            'output': 25,
+            "input": "abcabcaaa",
+            "output": 25,
         },
     ]
     solution = Solution()
 
     for param in params:
-        s = param['input']
+        s = param["input"]
         result = solution.numberOfSubstrings(s)
-        correct = json.dumps(result) == json.dumps(param['output'])
+        correct = json.dumps(result) == json.dumps(param["output"])
 
-        msg = 'SUCCESS' if correct else 'ERROR'
-        msg += '\n'
+        msg = "SUCCESS" if correct else "ERROR"
+        msg += "\n"
         if not correct:
-            msg += 'input ' + json.dumps(param['input']) + '\n'
-            msg += 'output ' + json.dumps(param['output']) + '\n'
-            msg += 'result ' + json.dumps(result) + '\n'
+            msg += "input " + json.dumps(param["input"]) + "\n"
+            msg += "output " + json.dumps(param["output"]) + "\n"
+            msg += "result " + json.dumps(result) + "\n"
 
         print(msg)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test()
